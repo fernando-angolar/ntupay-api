@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ntupay_local}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:12345}
+
+logging:
+  level:
+    root: INFO
