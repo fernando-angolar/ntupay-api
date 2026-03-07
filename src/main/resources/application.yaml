@@ -25,3 +25,8 @@ server:
 ntupay:
   activation:
     base-url: ${ACTIVATION_BASE_URL:http://localhost:5173/activate}
+
+  unlock:
+    base-url: ${UNLOCK_BASE_URL:http://localhost:5173/unlock}
+  jwt:
+    secret: ${JWT_SECRET:change-this-secret-key-at-least-32-chars}

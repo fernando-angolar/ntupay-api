@@ -47,6 +47,19 @@ public class User {
     @Column(name = "activation_token", nullable = false, unique = true, length = 120)
     private String activationToken;
 
+    @Column(name = "failed_login_attempts", nullable = false)
+    private int failedLoginAttempts;
+
+    @Column(name = "blocked_until")
+    private OffsetDateTime blockedUntil;
+
+    @Column(name = "two_factor_enabled", nullable = false)
+    private boolean twoFactorEnabled;
+
+    @Column(name = "totp_secret", length = 120)
+    private String totpSecret;
+
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
@@ -77,4 +90,13 @@ public class User {
     public String getActivationToken() { return activationToken; }
     public void setActivationToken(String activationToken) { this.activationToken = activationToken; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
+    public int getFailedLoginAttempts() { return failedLoginAttempts; }
+    public void setFailedLoginAttempts(int failedLoginAttempts) { this.failedLoginAttempts = failedLoginAttempts; }
+    public OffsetDateTime getBlockedUntil() { return blockedUntil; }
+    public void setBlockedUntil(OffsetDateTime blockedUntil) { this.blockedUntil = blockedUntil; }
+    public boolean isTwoFactorEnabled() { return twoFactorEnabled; }
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) { this.twoFactorEnabled = twoFactorEnabled; }
+    public String getTotpSecret() { return totpSecret; }
+    public void setTotpSecret(String totpSecret) { this.totpSecret = totpSecret; }
+
 }

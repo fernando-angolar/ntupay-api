@@ -1,8 +1,11 @@
 package ao.com.angotech.controller;
 
 import ao.com.angotech.common.ApiErrorResponse;
+import ao.com.angotech.dtos.LoginRequest;
+import ao.com.angotech.dtos.LoginResponse;
 import ao.com.angotech.dtos.UserRegistrationRequest;
 import ao.com.angotech.dtos.UserRegistrationResponse;
+import ao.com.angotech.service.LoginUserService;
 import ao.com.angotech.service.RegisterUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +24,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final RegisterUserService registerUserService;
+    private final LoginUserService loginUserService;
 
-    public UserController(RegisterUserService registerUserService) {
+    public UserController(RegisterUserService registerUserService, LoginUserService loginUserService) {
         this.registerUserService = registerUserService;
+        this.loginUserService = loginUserService;
     }
+
 
 
     @PostMapping("/register")
@@ -39,4 +46,18 @@ public class UserController {
     public UserRegistrationResponse register(@Valid @RequestBody UserRegistrationRequest request) {
         return registerUserService.execute(request);
     }
+
+    @PostMapping("/login")
+    @Operation(summary = "UC002 - Login de usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Conta bloqueada",
+                    content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
+    })
+    public LoginResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        return loginUserService.execute(request, httpRequest.getRemoteAddr(), httpRequest.getHeader("User-Agent"));
+    }
+
 }
