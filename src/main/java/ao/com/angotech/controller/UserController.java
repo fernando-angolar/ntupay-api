@@ -1,12 +1,10 @@
 package ao.com.angotech.controller;
 
 import ao.com.angotech.common.ApiErrorResponse;
-import ao.com.angotech.dtos.LoginRequest;
-import ao.com.angotech.dtos.LoginResponse;
-import ao.com.angotech.dtos.UserRegistrationRequest;
-import ao.com.angotech.dtos.UserRegistrationResponse;
+import ao.com.angotech.dtos.*;
 import ao.com.angotech.service.LoginUserService;
 import ao.com.angotech.service.RegisterUserService;
+import ao.com.angotech.service.PasswordRecoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,11 +23,16 @@ public class UserController {
 
     private final RegisterUserService registerUserService;
     private final LoginUserService loginUserService;
+    private final PasswordRecoveryService passwordRecoveryService;
 
-    public UserController(RegisterUserService registerUserService, LoginUserService loginUserService) {
+    public UserController(RegisterUserService registerUserService,
+                          LoginUserService loginUserService,
+                          PasswordRecoveryService passwordRecoveryService) {
         this.registerUserService = registerUserService;
         this.loginUserService = loginUserService;
+        this.passwordRecoveryService = passwordRecoveryService;
     }
+
 
 
 
@@ -59,5 +62,27 @@ public class UserController {
     public LoginResponse login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         return loginUserService.execute(request, httpRequest.getRemoteAddr(), httpRequest.getHeader("User-Agent"));
     }
+
+    @PostMapping("/password-recovery-requests")
+    @Operation(summary = "UC003 - Solicitar recuperação de senha")
+    public ApiMessageResponse requestPasswordRecovery(@Valid @RequestBody PasswordRecoveryRequest request) {
+        return new ApiMessageResponse(passwordRecoveryService.requestRecovery(request));
+    }
+
+    @GetMapping("/password-recovery/{token}")
+    @Operation(summary = "UC003 - Validar token de recuperação")
+    public ApiMessageResponse validatePasswordRecoveryToken(@PathVariable String token) {
+        passwordRecoveryService.validateToken(token);
+        return new ApiMessageResponse("Token válido");
+    }
+
+    @PostMapping("/password-recovery/{token}/reset")
+    @Operation(summary = "UC003 - Redefinir senha")
+    public ApiMessageResponse resetPassword(@PathVariable String token, @Valid @RequestBody ResetPasswordRequest request) {
+        passwordRecoveryService.resetPassword(token, request);
+        return new ApiMessageResponse("Senha alterada com sucesso");
+    }
+
+
 
 }
